@@ -12,10 +12,10 @@ class World:
 
   def __init__(self, min_coords=(0, 0),
                world_data_source=(21, 21),
-               event_data_source=None):
+               event_data_source=500):
 
     # Can either take a filename as a data source,
-    # or randomly generate testing data.
+    # or randomly generate testing data of given size.
     # Supported file types: csv, txt (treated as csv), json
 
     self.off = tuple([-x for x in min_coords])
@@ -58,7 +58,8 @@ class World:
           event_data_source, 'is not in a recognized format.')
 
     if event_nos is None:
-      event_nos = random.sample(range(10**9), k=self.size[0]*self.size[1])
+      event_nos = random.sample(
+        range(10**9), k=min(self.size[0]*self.size[1], event_data_source))
 
     if not given_world:
       self.generate_world(event_nos)
@@ -169,8 +170,9 @@ class World:
       self.world.append(row)
 
   def generate_tickets(self, event_nos):
-    # Randomly generates ticket price and availability data for testing purposes
-    # Prices are stored in cents, not dollars! So we need to convert them back for the user
+    # Randomly generates ticket price and availability data for testing
+    # Prices are stored in cents, not dollars!
+    # So we need to convert them back for the user
     self.events = {}
     for x in event_nos:
       prices = []
