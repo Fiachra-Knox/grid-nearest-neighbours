@@ -20,9 +20,9 @@ def maybe(p=0.5):
   # Random event which occurs with probability p
   return random.random() < p
 
-def save_world_as_csv(filename, world):
+def save_grid_as_csv(filename, grid):
   with open(filename, 'w') as f:
-    for row in reversed(world):
+    for row in reversed(grid):
       str_row = []
       for x in row:
         if x is None:

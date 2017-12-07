@@ -11,7 +11,7 @@ class World:
   # Methods allow listing of events nearby any given coordinate
 
   def __init__(self, min_coords=(0, 0),
-               world_data_source=(21, 21),
+               grid_data_source=(21, 21),
                event_data_source=500):
 
     # Can either take a filename as a data source,
@@ -21,28 +21,28 @@ class World:
     self.off = tuple([-x for x in min_coords])
     event_nos = None
 
-    given_world = isinstance(world_data_source, str)
-    if given_world:
-      ext = world_data_source.split('.')[-1]
+    given_grid = isinstance(grid_data_source, str)
+    if given_grid:
+      ext = grid_data_source.split('.')[-1]
       if ext in ['csv', 'txt']:
-        event_nos = self.load_world_from_csv(world_data_source)
+        event_nos = self.load_grid_from_csv(grid_data_source)
       elif ext == 'json':
-        with open(world_data_source, 'r') as f:
-          self.world = json.load(f)
+        with open(grid_data_source, 'r') as f:
+          self.grid = json.load(f)
         event_nos = []
-        for row in self.world:
+        for row in self.grid:
           for x in row:
             if x is not None:
               event_nos.append(x)
       else:
         raise UnrecognizedFormatError(
-          world_data_source, 'is not in a recognized format.')
+          grid_data_source, 'is not in a recognized format.')
     else:
-      if hasattr(world_data_source, '__getitem__'):
-        self.size = world_data_source
+      if hasattr(grid_data_source, '__getitem__'):
+        self.size = grid_data_source
       else:
         raise UnrecognizedFormatError(
-          world_data_source, 'is not subscriptable or a filename.')
+          grid_data_source, 'is not subscriptable or a filename.')
 
     given_events = isinstance(event_data_source, str)
     if given_events:
@@ -61,8 +61,8 @@ class World:
       event_nos = random.sample(
         range(10**9), k=min(self.size[0]*self.size[1], event_data_source))
 
-    if not given_world:
-      self.generate_world(event_nos)
+    if not given_grid:
+      self.generate_grid(event_nos)
     if not given_events:
       self.generate_tickets(event_nos)
 
@@ -71,7 +71,7 @@ class World:
 
   def get(self, x):
     x = self.offset(x)
-    return self.world[x[0]][x[1]]
+    return self.grid[x[0]][x[1]]
 
   def get_lowest_price(self, x):
     if isinstance(x, tuple):
@@ -86,7 +86,7 @@ class World:
     # Naive and very slow
     x = self.offset(x)
     nearest_events = []
-    for j, row in enumerate(self.world):
+    for j, row in enumerate(self.grid):
       for i, event_no in enumerate(row):
         if event_no is not None:
           price = lowest_positive(self.events[event_no])
@@ -105,10 +105,10 @@ class World:
       print('Event {0:=9} - ${1:=5.2f}, Distance {2}'.format(
         event[2], event[1]/100, event[0]))
 
-  def load_world_from_csv(self, filename):
+  def load_grid_from_csv(self, filename):
     # Returns the event numbers encoutered
     # in case data needs to be generated for them
-    self.world = []
+    self.grid = []
     event_nos = []
     row_length = None
     with open(filename, 'r') as f:
@@ -126,9 +126,9 @@ class World:
           row_length = len(row)
         else:
           assert(row_length == len(row))
-        self.world.append(row)
-    self.world.reverse()
-    self.size = (row_length, len(self.world))
+        self.grid.append(row)
+    self.grid.reverse()
+    self.size = (row_length, len(self.grid))
     return event_nos
 
   def load_events_from_csv(self, filename):
@@ -153,12 +153,12 @@ class World:
         self.events[event_no] = tickets
     return list(self.events.keys())
 
-  def generate_world(self, event_nos):
+  def generate_grid(self, event_nos):
     # Randomly generates world data for testing purposes
     idx = 0
     # If we have very few events, spread them out well.
     p = min(0.1, len(event_nos)/(self.size[0]*self.size[1]))
-    self.world = []
+    self.grid = []
     for i in range(self.size[1]):
       row = []
       for j in range(self.size[0]):
@@ -167,7 +167,7 @@ class World:
           idx += 1
         else:
           row.append(None)
-      self.world.append(row)
+      self.grid.append(row)
 
   def generate_tickets(self, event_nos):
     # Randomly generates ticket price and availability data for testing
