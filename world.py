@@ -61,6 +61,8 @@ class World:
   def get_nearest_events(self, x, k=None):
     # Returns a sorted list of the k events nearest to x,
     # or all events if k is not specified.
+    # Sold out events are not included.
+    # Ties broken by lowest ticket cost.
     # Naive and very slow
     x = self.offset(x)
     nearest_events = []
