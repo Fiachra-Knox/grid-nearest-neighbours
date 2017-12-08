@@ -71,9 +71,12 @@ class TestWorld(unittest.TestCase):
        (10, 668, 602022355)])
 
   def test_large_cases(self):
+    t = process_time()
     w = World(grid_data_source='grid_testcase_3.csv',
               event_data_source='events_testcase_3.csv',
               min_coords=(-1000, -1000))
+    t = process_time() - t
+    self.assertLess(t, 2)
 
     t = process_time()
     answer = w.get_nearest_events((-100, 100), k=10)
@@ -84,3 +87,17 @@ class TestWorld(unittest.TestCase):
        (44, 735, 920746258), (44, 5864, 839723794), (45, 2341, 476481568),
        (47, 1830, 559403626)])
     self.assertLess(t, 0.5)
+
+  @unittest.expectedFailure
+  def test_speed(self):
+    t = process_time()
+    w = World(grid_data_source='grid_testcase_3.csv',
+              event_data_source='events_testcase_3.csv',
+              min_coords=(-1000, -1000))
+    t = process_time() - t
+    self.assertLess(t, 2)
+
+    t = process_time()
+    answer = w.get_nearest_events((-100, 100), k=10)
+    t = process_time() - t
+    self.assertLess(t, 0.05)
