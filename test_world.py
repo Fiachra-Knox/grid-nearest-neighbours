@@ -88,7 +88,6 @@ class TestWorld(unittest.TestCase):
        (47, 1830, 559403626)])
     self.assertLess(t, 0.5)
 
-  @unittest.expectedFailure
   def test_speed(self):
     t = process_time()
     w = World(grid_data_source='grid_testcase_3.csv',

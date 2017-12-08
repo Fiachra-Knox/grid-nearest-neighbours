@@ -1,6 +1,7 @@
 import math
 import random
 from zlib import adler32
+from collections import defaultdict
 
 def manhattan_distance(x_1, x_2):
   # Calculates the Manhattan distance between two points in n-dim space.
@@ -20,6 +21,25 @@ def lowest_positive(d):
 def maybe(p=0.5):
   # Random event which occurs with probability p
   return random.random() < p
+
+def sparse_grid_diagonals(dense_grid, ascending=False):
+  # Turns a grid into a dictionary (with default value []);
+  # keys are k such that the diagonal x + y = k is nonempty
+  # Values are lists of coordinates and values of non-null entries.
+  sparse_diagonals = defaultdict(list)
+  if ascending:
+    off = len(dense_grid) - 1
+    f = lambda i, j: i - j
+  else:
+    f = lambda i, j: i + j
+  for j, row in enumerate(dense_grid):
+    for i, x in enumerate(row):
+      if x is not None:
+        sparse_diagonals[f(i, j)].append((i, j, x))
+  if not ascending:
+    for key in sparse_diagonals:
+      sparse_diagonals[key].reverse()
+  return sparse_diagonals
 
 def save_grid_as_csv(filename, grid):
   with open(filename, 'w') as f:
