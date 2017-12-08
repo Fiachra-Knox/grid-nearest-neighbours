@@ -1,5 +1,6 @@
 import math
 import random
+from zlib import adler32
 
 def manhattan_distance(x_1, x_2):
   # Calculates the Manhattan distance between two points in n-dim space.
@@ -40,3 +41,10 @@ def save_events_as_csv(filename, events):
         line.append('${0:.2f}:{1}'.format(price/100, events[e][price]))
       f.write(','.join(line))
       f.write('\n')
+
+def file_already_exists(filename, checksum):
+  try:
+    with open(filename, 'rb') as f:
+      return adler32(f.read()) == checksum
+  except FileNotFoundError:
+    return False

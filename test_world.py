@@ -4,7 +4,7 @@ from time import process_time
 
 from world import World
 from generate import generate_events, generate_grid
-from utils import save_grid_as_csv, save_events_as_csv
+from utils import save_grid_as_csv, save_events_as_csv, file_already_exists
 from exceptions import UnrecognizedFormatError
 
 class TestWorld(unittest.TestCase):
@@ -17,24 +17,28 @@ class TestWorld(unittest.TestCase):
     num_events = size[0]*size[1]
     random.seed('Look at all the pretty lights')
     event_nos = random.sample(range(10**9), k=num_events)
-    random.seed('New York, New York')
-    grid = generate_grid(size, event_nos)
-    random.seed('You won\'t find them cheaper anywhere else!')
-    events = generate_events(event_nos)
-    save_grid_as_csv('grid_testcase_2.csv', grid)
-    save_events_as_csv('events_testcase_2.csv', events)
+    if not file_already_exists('grid_testcase_2.csv', 2748486490):
+      random.seed('New York, New York')
+      grid = generate_grid(size, event_nos)
+      save_grid_as_csv('grid_testcase_2.csv', grid)
+    if not file_already_exists('events_testcase_2.csv', 4168537308):
+      random.seed('You won\'t find them cheaper anywhere else!')
+      events = generate_events(event_nos)
+      save_events_as_csv('events_testcase_2.csv', events)
 
     n=10**3
     num_events=10**4
     size = (2*n + 1, 2*n + 1)
     random.seed('Now we have a lot of events')
     event_nos = random.sample(range(10**9), k=num_events)
-    random.seed('Now the world is a lot bigger')
-    grid = generate_grid(size, event_nos)
-    random.seed('We have to generate details for all these many events')
-    events = generate_events(event_nos)
-    save_grid_as_csv('grid_testcase_3.csv', grid)
-    save_events_as_csv('events_testcase_3.csv', events)
+    if not file_already_exists('grid_testcase_3.csv', 2409672020):
+      random.seed('Now the world is a lot bigger')
+      grid = generate_grid(size, event_nos)
+      save_grid_as_csv('grid_testcase_3.csv', grid)
+    if not file_already_exists('events_testcase_3.csv', 3963271492):
+      random.seed('We have to generate details for all these many events')
+      events = generate_events(event_nos)
+      save_events_as_csv('events_testcase_3.csv', events)
 
   def test_errors(self):
     with self.assertRaises(UnrecognizedFormatError):
