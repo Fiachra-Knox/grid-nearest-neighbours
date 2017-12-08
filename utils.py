@@ -32,3 +32,11 @@ def save_grid_as_csv(filename, grid):
       f.write(','.join(str_row))
       f.write('\n')
 
+def save_events_as_csv(filename, events):
+  with open(filename, 'w') as f:
+    for e in sorted(events):
+      line = [str(e)]
+      for price in sorted(events[e]):
+        line.append('${0:.2f}:{1}'.format(price/100, events[e][price]))
+      f.write(','.join(line))
+      f.write('\n')
