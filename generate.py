@@ -19,19 +19,22 @@ def generate_grid(size, event_nos):
     ret.append(row)
   return ret
 
-def generate_events(event_nos):
+def generate_events(event_nos,
+                    max_num_prices=20,
+                    max_price=10**4,
+                    max_availability=10**5):
   # Randomly generates ticket price and availability data for testing
   # Prices are stored in cents, not dollars!
   # So we need to convert them back for the user
   events = {}
   for x in event_nos:
     prices = []
-    for i in range(random.randint(0, 20)):
-      prices.append(random.randint(1, 10**4))
+    for i in range(random.randint(0, max_num_prices)):
+      prices.append(random.randint(1, max_price))
     tickets = {}
     for p in prices:
       if maybe():
-        tickets[p] = random.randint(1, 10**5)
+        tickets[p] = random.randint(1, max_availability)
       else:
         tickets[p] = 0
     events[x] = tickets
