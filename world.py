@@ -1,8 +1,10 @@
 import random
 import math
 import json
+from bisect import bisect
 
-from utils import manhattan_distance, lowest_positive, maybe
+from utils import manhattan_distance, lowest_positive, maybe,\
+  sparse_grid_diagonals
 from exceptions import UnrecognizedFormatError
 
 class World:
@@ -32,6 +34,8 @@ class World:
       raise UnrecognizedFormatError(
         grid_data_source + ' is not in a recognized format.')
 
+    self.asc_diagonals = sparse_grid_diagonals(self.grid, ascending=True)
+    self.desc_diagonals = sparse_grid_diagonals(self.grid, ascending=False)
 
     ext = event_data_source.split('.')[-1]
     if ext in ['csv', 'txt']:
@@ -58,25 +62,73 @@ class World:
       return math.inf
     return lowest_positive(self.events[x])
 
-  def get_nearest_events(self, x, k=None):
+  def get_nearest_events(self, x, k=math.inf):
     # Returns a sorted list of the k events nearest to x,
     # or all events if k is not specified.
     # Sold out events are not included.
     # Ties broken by lowest ticket cost.
-    # Naive and very slow
     x = self.offset(x)
     nearest_events = []
-    for j, row in enumerate(self.grid):
-      for i, event_no in enumerate(row):
-        if event_no is not None:
-          price = lowest_positive(self.events[event_no])
-          if price < math.inf:
-            nearest_events.append((manhattan_distance(x, (i, j)), price, event_no))
-    nearest_events.sort()
-    if k is None:
-      return nearest_events
-    else:
-      return nearest_events[:k]
+    corners = [(0, 0), (self.size[0] - 1, 0), (0, self.size[1] - 1),
+               (self.size[0] - 1, self.size[1] - 1)]
+    max_d = max([manhattan_distance(x, c) for c in corners])
+    d = 0
+    e = self.grid[x[0]][x[1]]
+    if e is not None:
+      price = lowest_positive(self.events[e])
+      if price < math.inf:
+        nearest_events.append((d, price, e))
+    while d < max_d and len(nearest_events) < k:
+      d += 1
+      candidates = []
+
+      # Scan each diagonal at distance d for events
+      key = x[0] + x[1] + d
+      if key in self.desc_diagonals:
+        diag = self.desc_diagonals[key]
+        low_idx = bisect(diag, (x[0], -1, 0))
+        hi_idx = bisect(diag, (x[0] + d + 1, -1, 0))
+        for i in range(low_idx, hi_idx):
+          candidates.append(diag[i][2])
+
+      key = x[0] + x[1] - d
+      if key in self.desc_diagonals:
+        diag = self.desc_diagonals[key]
+        low_idx = bisect(diag, (x[0] - d, -1, 0))
+        hi_idx = bisect(diag, (x[0] + 1, -1, 0))
+        for i in range(low_idx, hi_idx):
+          candidates.append(diag[i][2])
+
+      key = x[0] - x[1] + d
+      if key in self.asc_diagonals:
+        diag = self.asc_diagonals[key]
+        low_idx = bisect(diag, (x[0], -1, 0))
+        hi_idx = bisect(diag, (x[0] + d + 1, -1, 0))
+        for i in range(low_idx, hi_idx):
+          candidates.append(diag[i][2])
+
+      key = x[0] - x[1] - d
+      if key in self.asc_diagonals:
+        diag = self.asc_diagonals[key]
+        low_idx = bisect(diag, (x[0] - d, -1, 0))
+        hi_idx = bisect(diag, (x[0] + 1, -1, 0))
+        for i in range(low_idx, hi_idx):
+          candidates.append(diag[i][2])
+
+      # Add events found in order of lowest price
+      # Stop if k values have been found already
+      candidates = set(candidates)
+      new_events = []
+      for e in candidates:
+        price = lowest_positive(self.events[e])
+        if price < math.inf:
+          new_events.append((d, price, e))
+      new_events.sort()
+      for z in new_events:
+        if len(nearest_events) == k:
+          break
+        nearest_events.append(z)
+    return nearest_events
 
   def print_nearest_events(self, x, k=None):
     nearest_events = self.get_nearest_events(x, k)
