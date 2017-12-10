@@ -78,8 +78,8 @@ class World:
     for i in range(2):
       if x[i] < 0:
         d -= x[i]
-      elif x[i] > self.size[i]:
-        d += (x[i] - self.size[i])
+      elif x[i] >= self.size[i]:
+        d += (x[i] - self.size[i] + 1)
 
     # Special case for events on the queried point
     # TODO: Is this really needed? Delete if not needed.
