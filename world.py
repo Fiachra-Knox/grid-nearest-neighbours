@@ -80,14 +80,18 @@ class World:
         d -= x[i]
       elif x[i] > self.size[i]:
         d += (x[i] - self.size[i])
+
+    # Special case for events on the queried point
+    # TODO: Is this really needed? Delete if not needed.
     if d == 0:
       e = self.grid[x[0]][x[1]]
       if e is not None:
         price = lowest_positive(self.events[e])
         if price < math.inf:
           nearest_events.append((d, price, e))
+      d = 1
+
     while d < max_d and len(nearest_events) < k:
-      d += 1
       candidates = []
 
       # Scan each diagonal at distance d for events
@@ -136,6 +140,7 @@ class World:
         if len(nearest_events) == k:
           break
         nearest_events.append(z)
+      d += 1
     return nearest_events
 
   def print_nearest_events(self, x, k=math.inf):
