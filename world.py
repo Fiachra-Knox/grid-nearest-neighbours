@@ -84,7 +84,7 @@ class World:
     # Special case for events on the queried point
     # TODO: Is this really needed? Delete if not needed.
     if d == 0:
-      e = self.grid[x[0]][x[1]]
+      e = self.grid[x[1]][x[0]]
       if e is not None:
         price = lowest_positive(self.events[e])
         if price < math.inf:
