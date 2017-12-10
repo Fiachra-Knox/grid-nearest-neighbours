@@ -72,12 +72,20 @@ class World:
     corners = [(0, 0), (self.size[0] - 1, 0), (0, self.size[1] - 1),
                (self.size[0] - 1, self.size[1] - 1)]
     max_d = max([manhattan_distance(x, c) for c in corners])
+    # If the coordinate is within the grid, we will start the distance at 0
+    # Otherwise, we start at the minimum distance to a grid point
     d = 0
-    e = self.grid[x[0]][x[1]]
-    if e is not None:
-      price = lowest_positive(self.events[e])
-      if price < math.inf:
-        nearest_events.append((d, price, e))
+    for i in range(2):
+      if x[i] < 0:
+        d -= x[i]
+      elif x[i] > self.size[i]:
+        d += (x[i] - self.size[i])
+    if d == 0:
+      e = self.grid[x[0]][x[1]]
+      if e is not None:
+        price = lowest_positive(self.events[e])
+        if price < math.inf:
+          nearest_events.append((d, price, e))
     while d < max_d and len(nearest_events) < k:
       d += 1
       candidates = []
@@ -130,7 +138,7 @@ class World:
         nearest_events.append(z)
     return nearest_events
 
-  def print_nearest_events(self, x, k=None):
+  def print_nearest_events(self, x, k=math.inf):
     nearest_events = self.get_nearest_events(x, k)
     print('Closest events to {0}:'.format(x))
     for event in nearest_events:
