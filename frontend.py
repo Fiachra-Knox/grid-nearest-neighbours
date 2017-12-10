@@ -11,6 +11,9 @@ parser.add_argument(
   '-s', '--seed', type=str, default='none',
   help='use SEED as a seed for the random number generator')
 parser.add_argument(
+  '-n', '--num_events', type=int, default=-1,
+  help='limit number of events to a maximum of NUM_EVENTS')
+parser.add_argument(
   '-mx', '--minx', type=int, default=-10,
   help='use MINX as the least x-coordinate of the world (default -10)')
 parser.add_argument(
@@ -40,7 +43,17 @@ for i in range(2):
   if size[i] <= 0:
     print('Warning: Grid has invalid size; using default instead.')
     size[i] = 21
-num_events = size[0]*size[1]
+if args.num_events < 0:
+  num_events = size[0]*size[1]
+else:
+  num_events = min(args.num_events, size[0]*size[1])
+
+# Accept a seed if given, for testing purposes
+if args.seed != 'none':
+  random.seed(args.seed)
+
+# Common list of event numbers for grid and events
+event_nos = random.sample(range(10**9), k=num_events)
 
 # Filenames (extension must always be .csv or .txt)
 for forb in '#%&{}\\<>*?/ $!\'\":@\n\t':
@@ -66,14 +79,6 @@ else:
     events_filename = args.events[:27] + '.csv'
   else:
     events_filename = args.events + '.csv'
-
-
-# Accept a seed if given, for testing purposes
-if args.seed != 'none':
-  random.seed(args.seed)
-
-# Common list of event numbers for grid and events
-event_nos = random.sample(range(10**9), k=num_events)
 
 # Create grid and events files to feed to World
 grid = generate_grid(size, event_nos)
