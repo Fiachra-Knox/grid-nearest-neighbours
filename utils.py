@@ -5,10 +5,11 @@ from collections import defaultdict
 
 def manhattan_distance(x_1, x_2):
   # Calculates the Manhattan distance between two points in n-dim space.
-  ret = 0
+  # Takes integer tuples x_1 and x_2 of the same length.
+  distance = 0
   for t in zip(x_1, x_2):
-    ret += abs(t[0] - t[1])
-  return ret
+    distance += abs(t[0] - t[1])
+  return distance
 
 def lowest_positive(d):
   # Returns the lowest key from d whose value is positive
