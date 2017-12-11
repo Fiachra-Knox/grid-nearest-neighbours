@@ -13,7 +13,8 @@ A more involved approach would be to avoid storing data on empty points at all,
 by using a sparse format
 (i.e., instead of storing the events at each point,
 store the coordinates of each event).
-The second option could also speed up world generation; see below.
+The second option could also speed up world generation and reading grid files,
+since we would no longer need to generate or read large numbers of empty points.
 
 Assuming the total number of events is limited,
 the program runs well at least up to grid sizes of 1000 \* 1000.
