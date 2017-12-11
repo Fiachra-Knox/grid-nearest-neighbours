@@ -11,8 +11,8 @@ parser.add_argument(
   '-s', '--seed', type=str, default='none',
   help='use SEED as a seed for the random number generator')
 parser.add_argument(
-  '-n', '--num_events', type=int, default=-1,
-  help='limit number of events to a maximum of NUM_EVENTS')
+  '-n', '--num_events', type=int, default=10000,
+  help='limit number of events to a maximum of NUM_EVENTS (-1: unlimited)')
 parser.add_argument(
   '-mx', '--minx', type=int, default=-10,
   help='use MINX as the least x-coordinate of the world (default -10)')
@@ -43,10 +43,14 @@ for i in range(2):
   if size[i] <= 0:
     print('Warning: Grid has invalid size; using default instead.')
     size[i] = 21
+if size[0]*size[1] > 10**7:
+  print('Warning: Grid size  greater than 10^7. This may take a while.')
 if args.num_events < 0:
   num_events = size[0]*size[1]
 else:
   num_events = min(args.num_events, size[0]*size[1])
+if num_events > 10000:
+  print('Warning: No. of events greater than 10^4. This may take a while.')
 
 # Accept a seed if given, for testing purposes
 if args.seed != 'none':
