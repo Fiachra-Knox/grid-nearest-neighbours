@@ -18,7 +18,7 @@ The second option could also speed up world generation; see below.
 Assuming the total number of events is limited,
 the program runs well at least up to grid sizes of 1000 \* 1000.
 Beyond that, the dominant factor in the running time of the program
-is the running time grid generation algorithm
+is the running time of the grid generation algorithm
 (unless the number of queries required is enormous).
 Therefore, the first change to make to deal with larger grid sizes
 would be to switch to sparse grid generation and storage as described above.
